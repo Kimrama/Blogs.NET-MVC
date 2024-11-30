@@ -1,0 +1,12 @@
+@model IEnumerable<blog.Models.Blog>
+
+@if(Model.Count() > 0) {
+    
+    @foreach(var blog in Model) {
+        <h2>@blog.Title</h2>
+        <p>@blog.Content</p>
+        <hr/>
+    }
+} else {
+    <div class="alert alert-warning text-center">No Blog</div>
+}
