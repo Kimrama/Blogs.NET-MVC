@@ -1,0 +1,24 @@
+@model Blog
+
+<h1 class="mb-4">Create Blog</h1>
+<div>
+    <form method="post" asp-controller="blogs" asp-action="create">
+        <div class="form-group mb-2">
+            <label class="fs-3" for="Title">Title</label>
+            <input type="text" class="form-control" id="Title" asp-for="Title" placeholder="Fill Title">
+            <span asp-validation-for="Title" class="text-danger"></span>
+        </div>
+        <div class="form-group mb-4">
+            <label class="fs-3" for="Content">Content</label>
+            <textarea class="form-control" style="resize: none;" id="Content" asp-for="Content" rows="10" placeholder="Fill Content"></textarea>
+            <span asp-validation-for="Content" class="text-danger"></span>
+        </div>
+        <button type="submit" class="btn btn-success" style="width: 180px;">Create</button>
+    </form>
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger">
+            Please correct the errors and try again.
+        </div>
+    }
+</div>

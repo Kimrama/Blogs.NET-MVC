@@ -25,9 +25,10 @@
                         </li>
                         @if(Context.Request.Cookies["AuthToken"] != null) {
                             <li class="nav-item">
-                                <a class="nav-link text-dark fs-4" asp-area="" asp-controller="Home" asp-action="Privacy">Create</a>
+                                <a class="nav-link text-dark fs-4" asp-area="" asp-controller="Blogs" asp-action="Create">Create</a>
                             </li>
                         }
+                          
                     </ul>
                     @if(Context.Request.Cookies["AuthToken"] != null)
                     {

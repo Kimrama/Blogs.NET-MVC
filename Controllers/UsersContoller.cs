@@ -13,10 +13,17 @@ namespace blog.Controllers {
     public class UsersController : Controller {
         private readonly AppDbContext _db;
         private readonly IConfiguration _configuration;
+        private readonly CookieOptions _cookieOptions; 
 
         public UsersController(AppDbContext db, IConfiguration configuration) {
             _db = db;
             _configuration = configuration;
+            this._cookieOptions = new CookieOptions {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Strict,
+                Expires = DateTime.Now.AddHours(1)
+            };
         }
         public IActionResult Index() {
             return View();
@@ -24,6 +31,7 @@ namespace blog.Controllers {
         public IActionResult Register() {
             return View();
         }
+        
 
         [HttpPost]
         public IActionResult RegisterJson([FromBody] User user) {
@@ -84,36 +92,18 @@ namespace blog.Controllers {
                 issuer: _configuration["Jwt:Issuer"],
                 audience: _configuration["Jwt:Audience"],
                 claims: claims,
-                expires: DateTime.Now.AddHours(1), // กำหนดเวลา expiry
+                expires: DateTime.Now.AddHours(1),
                 signingCredentials: creds
             );
 
             // Set token to cookie
             var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
-            Response.Cookies.Append("AuthToken", tokenString, new CookieOptions
-            {
-                HttpOnly = true, 
-                Secure = true,   
-                SameSite = SameSiteMode.Strict, 
-                Expires = DateTime.Now.AddHours(1) 
-            });
+            Response.Cookies.Append("AuthToken", tokenString, this._cookieOptions);
 
             // Write username and id to Cookie
-            Response.Cookies.Append("Username", resultUser.Username, new CookieOptions
-            {
-                HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.Strict,
-                Expires = DateTime.Now.AddHours(1)
-            });
+            Response.Cookies.Append("Username", resultUser.Username, this._cookieOptions);
+            Response.Cookies.Append("UserId", resultUser.Id.ToString(), this._cookieOptions);
 
-            Response.Cookies.Append("UserId", resultUser.Id.ToString(), new CookieOptions
-            {
-                HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.Strict,
-                Expires = DateTime.Now.AddHours(1)
-            });
 
             return RedirectToAction("Index", "Blogs");
 

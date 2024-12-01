@@ -17,15 +17,24 @@ public class BlogsController : Controller {
         IEnumerable<Blog> blogs = _db.Blogs;
         return View(blogs);
     }
-
+    public IActionResult Create() {
+            return View();
+    }
 
     [HttpPost]
-    public IActionResult Create([FromBody] Blog blog) {
-        System.Console.WriteLine("title", blog.Title);
+    public IActionResult Create([FromForm] Blog blog) {
+        
         if (ModelState.IsValid) {
+
+            int editerId = int.Parse(HttpContext.Request.Cookies["UserId"] ?? "0");
+            if (editerId == 0) {
+                return Unauthorized();
+            }
+            blog.UserId = editerId;
+
             _db.Blogs.Add(blog); 
             _db.SaveChanges();   
-            return Ok("Blog added successfully!");
+            return RedirectToAction("Index", "Blogs");
         }
 
         return BadRequest(ModelState);

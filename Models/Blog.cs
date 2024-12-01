@@ -7,15 +7,15 @@ public class Blog {
 
     [Key]
     public int Id { get; set; }
+
     [Required]
     public string Title { get; set; } = null!;
+
     [Required]
     public string Content { get; set; } = null!;
-
-    [Required]
-    public int UserId {get; set; }
+    public int UserId { get; set; }
 
     [ForeignKey(nameof(UserId))]
-    public User User { get; set;} = null!;
+    public User? User { get; set; }
 
 }
