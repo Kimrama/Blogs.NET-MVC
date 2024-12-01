@@ -13,6 +13,7 @@ public class BlogsController : Controller {
     }
 
     public IActionResult Index() {
+
         IEnumerable<Blog> blogs = _db.Blogs;
         return View(blogs);
     }

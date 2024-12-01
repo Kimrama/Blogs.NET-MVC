@@ -1,13 +1,22 @@
 using Microsoft.AspNetCore.Mvc;
 using blog.Models;
 using blog.Data;
+using System.Security.Claims;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.Extensions.Configuration;
+using System;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
+using System.Text;
 
 namespace blog.Controllers {
     public class UsersController : Controller {
         private readonly AppDbContext _db;
+        private readonly IConfiguration _configuration;
 
-        public UsersController(AppDbContext db) {
+        public UsersController(AppDbContext db, IConfiguration configuration) {
             _db = db;
+            _configuration = configuration;
         }
         public IActionResult Index() {
             return View();
@@ -59,7 +68,64 @@ namespace blog.Controllers {
             if (resultUser == null) {
                 return Unauthorized("Invalid username or password");
             }
-            return Ok($"{resultUser.Username}");
+            
+            // Create Claims
+            var claims = new[] {
+                new Claim(ClaimTypes.Name, resultUser.Username),
+                new Claim(ClaimTypes.Role, "User")
+            };
+
+            // Create Key
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:SecretKey"] ?? "default_secret_key_which_is_long_enough"));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            // Create token
+            var token = new JwtSecurityToken(
+                issuer: _configuration["Jwt:Issuer"],
+                audience: _configuration["Jwt:Audience"],
+                claims: claims,
+                expires: DateTime.Now.AddHours(1), // กำหนดเวลา expiry
+                signingCredentials: creds
+            );
+
+            // Set token to cookie
+            var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
+            Response.Cookies.Append("AuthToken", tokenString, new CookieOptions
+            {
+                HttpOnly = true, 
+                Secure = true,   
+                SameSite = SameSiteMode.Strict, 
+                Expires = DateTime.Now.AddHours(1) 
+            });
+
+            // Write username and id to Cookie
+            Response.Cookies.Append("Username", resultUser.Username, new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Strict,
+                Expires = DateTime.Now.AddHours(1)
+            });
+
+            Response.Cookies.Append("UserId", resultUser.Id.ToString(), new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Strict,
+                Expires = DateTime.Now.AddHours(1)
+            });
+
+            return RedirectToAction("Index", "Blogs");
+
+        }
+
+        public IActionResult Logout() {
+            Response.Cookies.Delete("AuthToken");
+            Response.Cookies.Delete("Username");
+            Response.Cookies.Delete("UserId");
+
+            return RedirectToAction("Index", "Blogs");
+
         }
 
     }
