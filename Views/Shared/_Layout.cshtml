@@ -27,7 +27,9 @@
                             <a class="nav-link text-dark fs-4" asp-area="" asp-controller="Home" asp-action="Privacy">Create</a>
                         </li>
                     </ul>
-                    <button class="btn btn-primary">Login</button>
+                    @if(ViewData["Page"]?.Equals("Login") != true) {
+                        <button class="btn btn-primary" style="width: 180px;"><a class="text-decoration-none text-white" asp-controller="users" asp-action="Index">Login</a></button>
+                    }
                 </div>
             </div>
         </nav>

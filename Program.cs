@@ -13,6 +13,10 @@ builder.Services.AddControllersWithViews();
 // Handle JSON
 builder.Services.AddControllers().AddJsonOptions(options => {options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;});
 
+
+// builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+//     .AddEntityFrameworkStores<AppDbContext>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

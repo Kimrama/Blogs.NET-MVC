@@ -1,0 +1,52 @@
+@model User
+@{
+    ViewData["Page"] = "Register";
+}
+
+<div class="border-2 d-flex justify-content-center">
+    <form id="registerForm" method="post" asp-controller="users" asp-action="register" class="w-50 p-5 d-inline-block border border-2 rounded">
+        <div class="form-group mb-3">
+            <label for="Username">Username</label>
+            <input type="text" class="form-control" id="Username" name="Username" placeholder="Enter Username">
+            <span asp-validation-for="Username" class="text-danger"></span>
+        </div>
+        <div class="form-group mb-3">
+            <label for="Password">Password</label>
+            <input type="password" class="form-control" id="Password" name="Password" placeholder="Enter Password">
+        </div>
+        <div class="form-group mb-3">
+            <label for="ConfirmPassword">Confirm Password</label>
+            <input type="password" class="form-control" id="ConfirmPassword" name="ConfirmPassword" placeholder="Confirm Password">
+            <small id="passwordError" class="text-danger d-none">Passwords do not match. Please try again.</small>
+        </div>
+        <div class="d-flex flex-column align-items-center">
+            <button type="submit" class="btn btn-primary w-75 bg-success">Register</button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById("registerForm").addEventListener("submit", function (e) {
+            const password = document.getElementById("Password").value.trim();
+            const confirmPassword = document.getElementById("ConfirmPassword").value.trim();
+            const errorElement = document.getElementById("passwordError");
+
+            if (password === "" || confirmPassword === "") {
+                e.preventDefault();
+                alert("Password cannot be empty.");
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                e.preventDefault(); 
+                errorElement.classList.remove("d-none");
+            }
+        });
+
+        document.getElementById("ConfirmPassword").addEventListener("input", function () {
+            const errorElement = document.getElementById("passwordError");
+            errorElement.classList.add("d-none");
+        });
+    </script>
+}
