@@ -10,8 +10,8 @@ using blog.Data;
 namespace blog.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20241201085443_AddUserAndBlogTables")]
-    partial class AddUserAndBlogTables
+    [Migration("20241202020633_AddImagePathToBlog")]
+    partial class AddImagePathToBlog
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -27,6 +27,9 @@ namespace blog.Migrations
 
                     b.Property<string>("Content")
                         .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ImagePath")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Title")

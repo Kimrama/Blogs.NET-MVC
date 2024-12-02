@@ -18,4 +18,6 @@ public class Blog {
     [ForeignKey(nameof(UserId))]
     public User? User { get; set; }
 
+    public string? ImagePath {get; set; }
+
 }

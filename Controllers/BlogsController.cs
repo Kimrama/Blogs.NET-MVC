@@ -22,7 +22,7 @@ public class BlogsController : Controller {
     }
 
     [HttpPost]
-    public IActionResult Create([FromForm] Blog blog) {
+    public IActionResult Create([FromForm] Blog blog, IFormFile? Image) {
         
         if (ModelState.IsValid) {
 
@@ -30,6 +30,24 @@ public class BlogsController : Controller {
             if (editerId == 0) {
                 return Unauthorized();
             }
+            
+            if(Image != null && Image.Length > 0) {
+
+                var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+                if (!Directory.Exists(uploadsFolder)) {
+                    Directory.CreateDirectory(uploadsFolder);
+                }
+                var uniqueFileName = $"{Guid.NewGuid()}_{Image.FileName}";
+                var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    Image.CopyTo(stream);
+                }
+
+                blog.ImagePath = $"/uploads/{uniqueFileName}";
+            }
+
             blog.UserId = editerId;
 
             _db.Blogs.Add(blog); 
